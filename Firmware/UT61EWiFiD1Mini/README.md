@@ -47,3 +47,30 @@ There are three representations of value: `value`, `display_value`, `display_str
  "Normal", "overload" or "underload"
 ### battery_low: boolean
  `true` or `false`.
+ 
+ 
+ # fixing the `ceill` error in PlatformIO
+ https://community.platformio.org/t/multiple-definition-of-ceill/22823/15
+
+ (under Linux) open ~/.platformio/packages/framework-arduinoespressif8266/tools/platformio-build.py and replace the if/else block at line 269 with:
+
+```
+
+if "PIO_FRAMEWORK_ARDUINO_ENABLE_EXCEPTIONS" in flatten_cppdefines:
+    env.Append(
+        CXXFLAGS=["-fexceptions"],
+        #LIBS=["stdc++-exc"]
+    )
+    old_libs = env["LIBS"]
+    old_libs.insert(len(env["LIBS"]) - 4, "stdc++-exc")
+    env["LIBS"] = old_libs
+else:
+    env.Append(
+        CXXFLAGS=["-fno-exceptions"],
+#        LIBS=["stdc++"]
+    )
+    old_libs = env["LIBS"]
+    old_libs.insert(len(env["LIBS"]) - 4, "stdc++")
+    env["LIBS"] = old_libs
+```
+    
